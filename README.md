@@ -12,3 +12,40 @@ scikit-learn 0.24.2
 torch 1.10.0
 python 3.6.13
 ```
+# Datasets
+The Immune cells dataset is downloaded from: https://www.tissueimmunecellatlas.org/
+
+The packer dataset is downloaded from: https://depts.washington.edu:/trapnell-lab/software/monocle3/celegans/data/packer_embryo_expression.rds
+
+The raw datasets are downloaded from: https://hemberg-lab.github.io/scRNA.seq.datasets/
+
+# Usage
+
+```console
+import scanpy as sc
+import numpy as np
+from MUSIC-GCN import train_musigcn 
+adata=sc.read_h5ad("/home/liuyan/code/singlecell/MUSIC-GCN/data/global.h5ad")
+true_label=adata.obs["Manually_curated_celltype"]
+cell_selected=list(np.random.randint(0,adata.shape[0],40000))
+new_adata=adata.X[cell_selected]
+Y=list(true_label[cell_selected])
+new_adata=sc.AnnData(new_adata)
+sc.pp.normalize_per_cell(new_adata, counts_per_cell_after=1e4)  #This type of regularization can also be used in MUSIC-GCN
+sc.pp.log1p(new_adata)
+sc.pp.highly_variable_genes(
+            new_adata,n_top_genes=2000)
+highly_variable_genes = new_adata.var["highly_variable"]
+X=new_adata[:,highly_variable_genes].X.toarray()
+from sklearn.preprocessing import LabelEncoder
+le=LabelEncoder()
+le.fit(Y)
+y=le.transform(Y)
+n_clusters =len(list(set(list(y))))
+#n_clusters =？ # 
+n_input = 2000
+train_musicgcn(X,y,X)
+```
+# Connect
+
+If you have any questions, please contact yanliu@njust.edu.cn

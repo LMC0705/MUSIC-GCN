@@ -46,6 +46,6 @@ n_clusters =len(list(set(list(y))))
 n_input = 2000
 train_musicgcn(X,y,X)
 ```
-# Connect
+# Contact
 
 If you have any questions, please contact yanliu@njust.edu.cn
